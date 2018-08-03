@@ -10,6 +10,11 @@ trait SoftDeleteTrait
 {
 
     /**
+     * @var boolean
+     */
+    protected $_findWithDeleted;
+
+    /**
      * Get the configured deletion field
      *
      * @return string
@@ -169,5 +174,21 @@ trait SoftDeleteTrait
         $softDeleteField = $this->getSoftDeleteField();
         $entity->$softDeleteField = null;
         return $this->save($entity);
+    }
+
+    /**
+     * @param bool $enable
+     */
+    public function enableFindWithDeleted($enable = true)
+    {
+        $this->_findWithDeleted = (bool)$enable;
+    }
+
+    /**
+     * @return bool
+     */
+    public function findWithDeleted()
+    {
+        return $this->_findWithDeleted;
     }
 }
