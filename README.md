@@ -9,7 +9,7 @@ When soft deleting an entity, it is not actually removed from your database. Ins
 
 ## Requirements
 
-This plugins has been developed for cakephp 3.x.
+- CakePHP 3.5.0 or later
 
 ## Installation
 
