@@ -6,7 +6,8 @@ use Cake\Datasource\EntityInterface;
 use SoftDelete\Error\MissingColumnException;
 use SoftDelete\ORM\Query;
 
-trait SoftDeleteTrait {
+trait SoftDeleteTrait
+{
 
     /**
      * Get the configured deletion field
@@ -122,7 +123,7 @@ trait SoftDeleteTrait {
      */
     public function hardDelete(EntityInterface $entity)
     {
-        if(!$this->delete($entity)) {
+        if (!$this->delete($entity)) {
             return false;
         }
         $primaryKey = (array)$this->primaryKey();
