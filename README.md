@@ -32,7 +32,7 @@ Plugin::load('SoftDelete');
 
 Use the SoftDelete trait on your model Table class:
 
-```
+```php
 // in src/Model/Table/UsersTable.php
 ...
 use SoftDelete\Model\Table\SoftDeleteTrait;
