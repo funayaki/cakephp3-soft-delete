@@ -24,10 +24,12 @@ composer require funayaki/cakephp3-soft-delete:dev-master
 ## Configuration
 
 ### Load the plugin:
-```
+
+```shell
 // In /config/bootstrap.php
 Plugin::load('SoftDelete');
 ```
+
 ### Make a model soft deleteable:
 
 Use the SoftDelete trait on your model Table class:
