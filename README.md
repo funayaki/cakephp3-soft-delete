@@ -25,7 +25,7 @@ composer require funayaki/cakephp3-soft-delete:dev-master
 
 ### Load the plugin:
 
-```shell
+```php
 // In /config/bootstrap.php
 Plugin::load('SoftDelete');
 ```
