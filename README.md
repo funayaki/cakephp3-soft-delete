@@ -17,7 +17,7 @@ You can install this plugin into your CakePHP application using [composer](http:
 
 Update your composer file to include this plugin:
 
-```
+```shell
 composer require funayaki/cakephp3-soft-delete:dev-master
 ```
 
@@ -97,6 +97,7 @@ $allRecords            = $this->find('all', ['withDeleted']);
 ### Hard deleting records
 
 To hard delete a single entity:
+
 ```php
 // in src/Model/Table/UsersTable.php
 $user = $this->get($userId);
@@ -105,7 +106,7 @@ $success = $this->hardDelete($user);
 
 To mass hard delete records that were soft deleted before a given date, you can use hardDeleteAll($date):
 
-```
+```php
 // in src/Model/Table/UsersTable.php
 $date = new \DateTime('some date');
 $affectedRowsCount = $this->hardDeleteAll($date);
