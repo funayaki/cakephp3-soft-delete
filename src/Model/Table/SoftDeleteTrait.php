@@ -179,7 +179,6 @@ trait SoftDeleteTrait
      * @param \DateTime $until Date until which soft deleted records must be hard deleted.
      * @return int number of affected rows.
      */
-    /*
     public function hardDeleteAll(\Datetime $until)
     {
         $query = $this->query()
@@ -192,7 +191,6 @@ trait SoftDeleteTrait
         $statement->closeCursor();
         return $statement->rowCount();
     }
-    */
 
     /**
      * Restore a soft deleted entity into an active state.

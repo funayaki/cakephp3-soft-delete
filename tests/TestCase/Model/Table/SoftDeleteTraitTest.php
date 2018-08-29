@@ -203,7 +203,6 @@ class SoftDeleteBehaviorTest extends TestCase
     /**
      * Tests hardDeleteAll.
      */
-    /*
     public function testHardDeleteAll()
     {
         $affectedRows = $this->postsTable->hardDeleteAll(new \DateTime('now'));
@@ -218,7 +217,6 @@ class SoftDeleteBehaviorTest extends TestCase
         $newpostsRowsCount = $this->postsTable->find('all', ['withDeleted'])->count();
         $this->assertEquals($postsRowsCount - 1, $newpostsRowsCount);
     }
-    */
 
     /**
      * Using a table with a custom soft delete field, ensure we can still filter
