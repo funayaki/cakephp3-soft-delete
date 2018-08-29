@@ -22,9 +22,9 @@ class Query extends CakeQuery
         if (!$this->_beforeFindFired && $this->_type === 'select') {
             parent::triggerBeforeFind();
 
-            $repository = $this->getRepository();
+            $repository = $this->repository();
             $options = $this->getOptions();
-            $findWithDeleted = in_array('withDeleted', $options) || $this->getRepository()->findWithDeleted();
+            $findWithDeleted = in_array('withDeleted', $options) || $this->repository()->findWithDeleted();
 
             if (!is_array($options) || !$findWithDeleted) {
                 $aliasedField = $repository->aliasField($repository->getSoftDeleteField());
