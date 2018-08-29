@@ -48,13 +48,6 @@ Configure::write('App', [
     ]
 ]);
 
-debug(Configure::read('Error'));
-debug(Configure::delete('Error'));
-Configure::write('Error', [
-    'errorLevel' => E_ALL & ~E_USER_DEPRECATED,
-]);
-debug(Configure::read('Error'));
-
 Configure::write('Session', [
     'defaults' => 'php'
 ]);
