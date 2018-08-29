@@ -40,6 +40,34 @@ trait SoftDeleteTrait
         return $field;
     }
 
+    /**
+     * Get the configured deletion value
+     *
+     * @return false|string
+     */
+    public function getSoftDeleteValue() {
+        if (isset($this->softDeleteValue)) {
+            $value = $this->softDeleteValue;
+        } else {
+            $value = date('Y-m-d H:i:s');
+        }
+        return $value;
+    }
+
+    /**
+     * Get the configured not deleted value
+     *
+     * @return null
+     */
+    public function getNotDeleteValue() {
+        if (isset($this->notDeleteValue)) {
+            $value = $this->notDeleteValue;
+        } else {
+            $value = null;
+        }
+        return $value;
+    }
+
     public function query()
     {
         return new Query($this->getConnection(), $this);
@@ -90,7 +118,7 @@ trait SoftDeleteTrait
         $query = $this->query();
         $conditions = (array)$entity->extract($primaryKey);
         $statement = $query->update()
-            ->set([$this->getSoftDeleteField() => date('Y-m-d H:i:s')])
+            ->set([$this->getSoftDeleteField() => $this->getSoftDeleteValue()])
             ->where($conditions)
             ->execute();
 
@@ -115,7 +143,7 @@ trait SoftDeleteTrait
     {
         $query = $this->query()
             ->update()
-            ->set([$this->getSoftDeleteField() => date('Y-m-d H:i:s')])
+            ->set([$this->getSoftDeleteField() => $this->getSoftDeleteValue()])
             ->where($conditions);
         $statement = $query->execute();
         $statement->closeCursor();
@@ -151,6 +179,7 @@ trait SoftDeleteTrait
      * @param \DateTime $until Date until which soft deleted records must be hard deleted.
      * @return int number of affected rows.
      */
+    /*
     public function hardDeleteAll(\Datetime $until)
     {
         $query = $this->query()
@@ -163,6 +192,7 @@ trait SoftDeleteTrait
         $statement->closeCursor();
         return $statement->rowCount();
     }
+    */
 
     /**
      * Restore a soft deleted entity into an active state.
@@ -172,7 +202,7 @@ trait SoftDeleteTrait
     public function restore(EntityInterface $entity)
     {
         $softDeleteField = $this->getSoftDeleteField();
-        $entity->$softDeleteField = null;
+        $notDeleteValue = $this->getNotDeleteValue();
         return $this->save($entity);
     }
 
