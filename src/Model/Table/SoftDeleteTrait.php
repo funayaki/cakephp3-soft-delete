@@ -45,7 +45,8 @@ trait SoftDeleteTrait
      *
      * @return false|string
      */
-    public function getSoftDeleteValue() {
+    public function getSoftDeleteValue()
+    {
         if (isset($this->softDeleteValue)) {
             $value = $this->softDeleteValue;
         } else {
@@ -59,7 +60,8 @@ trait SoftDeleteTrait
      *
      * @return null
      */
-    public function getNotDeleteValue() {
+    public function getNotDeleteValue()
+    {
         if (isset($this->notDeleteValue)) {
             $value = $this->notDeleteValue;
         } else {
