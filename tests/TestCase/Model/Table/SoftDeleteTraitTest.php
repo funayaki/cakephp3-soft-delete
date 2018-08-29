@@ -13,6 +13,7 @@ class SoftDeleteBehaviorTest extends TestCase
     private $postsTable;
     private $tagsTable;
     private $postsTagsTable;
+    private $staffsTable;
 
     /**
      * fixtures
@@ -23,7 +24,8 @@ class SoftDeleteBehaviorTest extends TestCase
         'plugin.SoftDelete.users',
         'plugin.SoftDelete.posts',
         'plugin.SoftDelete.tags',
-        'plugin.SoftDelete.posts_tags'
+        'plugin.SoftDelete.posts_tags',
+        'plugin.SoftDelete.staffs'
     ];
 
     /**
@@ -35,10 +37,11 @@ class SoftDeleteBehaviorTest extends TestCase
     {
         parent::setUp();
 
-        $this->usersTable = TableRegistry::get('Users', ['className' => 'SoftDelete\Test\Fixture\UsersTable']);
-        $this->postsTable = TableRegistry::get('Posts', ['className' => 'SoftDelete\Test\Fixture\PostsTable']);
-        $this->tagsTable = TableRegistry::get('Tags', ['className' => 'SoftDelete\Test\Fixture\TagsTable']);
-        $this->postsTagsTable = TableRegistry::get('PostsTags', ['className' => 'SoftDelete\Test\Fixture\PostsTagsTable']);
+        $this->usersTable = TableRegistry::getTableLocator()->get('Users', ['className' => 'SoftDelete\Test\Fixture\UsersTable']);
+        $this->postsTable = TableRegistry::getTableLocator()->get('Posts', ['className' => 'SoftDelete\Test\Fixture\PostsTable']);
+        $this->tagsTable = TableRegistry::getTableLocator()->get('Tags', ['className' => 'SoftDelete\Test\Fixture\TagsTable']);
+        $this->postsTagsTable = TableRegistry::getTableLocator()->get('PostsTags', ['className' => 'SoftDelete\Test\Fixture\PostsTagsTable']);
+        $this->staffsTable = TableRegistry::getTableLocator()->get('Staffs', ['className' => 'SoftDelete\Test\Fixture\StaffsTable']);
     }
 
     /**
@@ -51,6 +54,7 @@ class SoftDeleteBehaviorTest extends TestCase
         unset($this->usersTable);
         unset($this->postsTable);
         unset($this->tagsTable);
+        unset($this->staffsTable);
         parent::tearDown();
     }
 

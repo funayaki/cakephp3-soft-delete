@@ -203,6 +203,7 @@ trait SoftDeleteTrait
     {
         $softDeleteField = $this->getSoftDeleteField();
         $notDeleteValue = $this->getNotDeleteValue();
+        $entity->$softDeleteField = $notDeleteValue;
         return $this->save($entity);
     }
 
