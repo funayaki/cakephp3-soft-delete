@@ -60,10 +60,10 @@ trait SoftDeleteTrait
      *
      * @return null
      */
-    public function getNotDeleteValue()
+    public function getRestoreValue()
     {
-        if (isset($this->notDeleteValue)) {
-            $value = $this->notDeleteValue;
+        if (isset($this->restoreValue)) {
+            $value = $this->restoreValue;
         } else {
             $value = null;
         }
@@ -202,7 +202,7 @@ trait SoftDeleteTrait
     public function restore(EntityInterface $entity)
     {
         $softDeleteField = $this->getSoftDeleteField();
-        $notDeleteValue = $this->getNotDeleteValue();
+        $notDeleteValue = $this->getRestoreValue();
         $entity->$softDeleteField = $notDeleteValue;
         return $this->save($entity);
     }
