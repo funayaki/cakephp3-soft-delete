@@ -47,6 +47,9 @@ Configure::write('App', [
         'templates' => [APP . 'Template' . DS]
     ]
 ]);
+Configure::write('Error', [
+    'errorLevel' => E_ALL & ~E_USER_DEPRECATED,
+]);
 
 Configure::write('Session', [
     'defaults' => 'php'
