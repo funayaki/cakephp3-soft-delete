@@ -4,7 +4,7 @@
 
 ## Purpose
 
-This Cakephp plugin enables you to make your models soft deletable.
+This CakePHP plugin enables you to make your models soft deletable.
 When soft deleting an entity, it is not actually removed from your database. Instead, a `deleted` timestamp is set on the record.
 
 ## Requirements
@@ -32,33 +32,30 @@ Plugin::load('SoftDelete');
 
 ### Make a model soft deleteable:
 
-Use the SoftDelete trait on your model Table class:
+Use the SoftDelete trait and implement the SoftDeleteAwareInterface on your model Table class:
 
 ```php
 // in src/Model/Table/UsersTable.php
 ...
+use SoftDelete\Model\Table\Entity\SoftDeleteAwareInterface;
 use SoftDelete\Model\Table\SoftDeleteTrait;
 
-class UsersTable extends Table
-{
-    use SoftDeleteTrait;
-    ...
-```
-
-Your soft deletable model database table should have a field called `deleted` of type DateTime with NULL as default value.
-If you want to customise this field you can declare the field in your Table class.
-
-```php
-// in src/Model/Table/UsersTable.php
-...
-use SoftDelete\Model\Table\SoftDeleteTrait;
-
-class UsersTable extends Table
+class UsersTable extends Table implements SoftDeleteAwareInterface
 {
     use SoftDeleteTrait;
 
-    protected $softDeleteField = 'deleted_date';
-    ...
+    public function getSoftDeleteField()
+    {
+        return 'deleted';
+    }
+     public function getSoftDeleteValue()
+    {
+        return date('Y-m-d H:i:s');
+    }
+     public function getRestoreValue()
+    {
+        return null;
+    }
 ```
 
 ## Use
@@ -109,7 +106,9 @@ To mass hard delete records that were soft deleted before a given date, you can 
 ```php
 // in src/Model/Table/UsersTable.php
 $date = new \DateTime('some date');
-$affectedRowsCount = $this->hardDeleteAll($date);
+$affectedRowsCount = $this->hardDeleteAll([
+    $this->getSoftDeleteField() . ' <=' => $date->format('Y-m-d H:i:s')
+]);
 ```
 
 ## Soft deleting & associations
