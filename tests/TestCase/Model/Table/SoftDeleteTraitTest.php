@@ -325,4 +325,20 @@ class SoftDeleteBehaviorTest extends TestCase
         $staff = $this->staffsTable->findById(2)->first();
         $this->assertNotNull($staff);
     }
+
+    /**
+     * Test hardDelete a record with custom value.
+     *
+     * @return void
+     */
+    public function testHardDeleteWithCustomValue()
+    {
+        $staff = $this->staffsTable->get(1);
+        $this->staffsTable->hardDelete($staff);
+        $staff = $this->staffsTable->findById(1)->first();
+        $this->assertNull($staff);
+
+        $staff = $this->staffsTable->find('all', ['withDeleted'])->where(['id' => 1])->first();
+        $this->assertNull($staff);
+    }
 }
