@@ -350,4 +350,19 @@ class SoftDeleteBehaviorTest extends TestCase
         $staff = $this->staffsTable->find('all', ['withDeleted'])->where(['id' => 1])->first();
         $this->assertNull($staff);
     }
+
+    /**
+     * Tests hardDeleteAll with custom value.
+     *
+     * @return void
+     */
+    public function testHardDeleteAllWithCustomValue()
+    {
+        $affectedRows = $this->staffsTable->hardDeleteAll([]);
+        $this->assertEquals(1, $affectedRows);
+
+        $this->staffsTable->delete($this->staffsTable->get(1));
+        $affectedRows = $this->staffsTable->hardDeleteAll([]);
+        $this->assertEquals(1, $affectedRows);
+    }
 }
