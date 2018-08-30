@@ -48,11 +48,13 @@ class UsersTable extends Table implements SoftDeleteAwareInterface
     {
         return 'deleted';
     }
-     public function getSoftDeleteValue()
+
+    public function getSoftDeleteValue()
     {
         return date('Y-m-d H:i:s');
     }
-     public function getRestoreValue()
+
+    public function getRestoreValue()
     {
         return null;
     }
