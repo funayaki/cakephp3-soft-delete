@@ -36,7 +36,7 @@ class Query extends CakeQuery
             }
 
             if (!is_array($options) || !$findWithDeleted) {
-                $aliasedField = $repository->aliasField($repository->getSoftDeleteField());
+                $aliasedField = $repository->aliasField($repository->ensureSoftDeleteFieldExists());
                 $deletedValue = $repository->getRestoreValue();
                 if ($deletedValue === null) {
                     $this->andWhere($aliasedField . ' IS NULL');

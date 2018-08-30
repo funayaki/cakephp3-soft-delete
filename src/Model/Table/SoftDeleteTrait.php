@@ -20,13 +20,14 @@ trait SoftDeleteTrait
      * @return string
      * @throws \SoftDelete\Error\MissingFieldException
      */
-    public function getSoftDeleteField()
+    public function ensureSoftDeleteFieldExists()
     {
-        if (isset($this->softDeleteField)) {
-            $field = $this->softDeleteField;
-        } else {
-            $field = 'deleted';
+        $callable = [$this, 'getSoftDeleteField'];
+        if (!is_callable($callable)) {
+            throw new \BadMethodCallException();
         }
+
+        $field = call_user_func($callable);
 
         if ($this->getSchema()->getColumn($field) === null) {
             throw new MissingColumnException(
@@ -38,36 +39,6 @@ trait SoftDeleteTrait
         }
 
         return $field;
-    }
-
-    /**
-     * Get the configured deletion value
-     *
-     * @return false|string
-     */
-    public function getSoftDeleteValue()
-    {
-        if (isset($this->softDeleteValue)) {
-            $value = $this->softDeleteValue;
-        } else {
-            $value = date('Y-m-d H:i:s');
-        }
-        return $value;
-    }
-
-    /**
-     * Get the configured not deleted value
-     *
-     * @return null
-     */
-    public function getRestoreValue()
-    {
-        if (isset($this->restoreValue)) {
-            $value = $this->restoreValue;
-        } else {
-            $value = null;
-        }
-        return $value;
     }
 
     public function query()
@@ -120,7 +91,7 @@ trait SoftDeleteTrait
         $query = $this->query();
         $conditions = (array)$entity->extract($primaryKey);
         $statement = $query->update()
-            ->set([$this->getSoftDeleteField() => $this->getSoftDeleteValue()])
+            ->set([$this->ensureSoftDeleteFieldExists() => $this->getSoftDeleteValue()])
             ->where($conditions)
             ->execute();
 
@@ -145,7 +116,7 @@ trait SoftDeleteTrait
     {
         $query = $this->query()
             ->update()
-            ->set([$this->getSoftDeleteField() => $this->getSoftDeleteValue()])
+            ->set([$this->ensureSoftDeleteFieldExists() => $this->getSoftDeleteValue()])
             ->where($conditions);
         $statement = $query->execute();
         $statement->closeCursor();
@@ -186,8 +157,8 @@ trait SoftDeleteTrait
         $query = $this->query()
             ->delete()
             ->where([
-                $this->getSoftDeleteField() . ' IS NOT NULL',
-                $this->getSoftDeleteField() . ' <=' => $until->format('Y-m-d H:i:s')
+                $this->ensureSoftDeleteFieldExists() . ' IS NOT NULL',
+                $this->ensureSoftDeleteFieldExists() . ' <=' => $until->format('Y-m-d H:i:s')
             ]);
         $statement = $query->execute();
         $statement->closeCursor();
@@ -201,7 +172,7 @@ trait SoftDeleteTrait
      */
     public function restore(EntityInterface $entity)
     {
-        $softDeleteField = $this->getSoftDeleteField();
+        $softDeleteField = $this->ensureSoftDeleteFieldExists();
         $notDeleteValue = $this->getRestoreValue();
         $entity->$softDeleteField = $notDeleteValue;
         return $this->save($entity);

@@ -5,13 +5,12 @@ namespace SoftDelete\Test\Fixture;
 use Cake\ORM\Table;
 use Cake\TestSuite\Fixture\TestFixture;
 
+use SoftDelete\Model\Table\Entity\SoftDeleteAwareInterface;
 use SoftDelete\Model\Table\SoftDeleteTrait;
 
-class TagsTable extends Table
+class TagsTable extends Table implements SoftDeleteAwareInterface
 {
     use SoftDeleteTrait;
-
-    protected $softDeleteField = 'deleted_date';
 
     public function initialize(array $config)
     {
@@ -23,15 +22,31 @@ class TagsTable extends Table
         ]);
         $this->hasMany('PostsTags');
     }
+
+    public function getSoftDeleteField()
+    {
+        return 'deleted_date';
+    }
+
+    public function getSoftDeleteValue()
+    {
+        return date('Y-m-d H:i:s');
+    }
+
+    public function getRestoreValue()
+    {
+        return null;
+    }
 }
 
 
-class TagsFixture extends TestFixture {
+class TagsFixture extends TestFixture
+{
 
     public $fields = [
-        'id'          => ['type' => 'integer'],
-        'name'     => ['type' => 'string'],
-        'deleted_date'     => ['type' => 'datetime', 'default' => null, 'null' => true],
+        'id' => ['type' => 'integer'],
+        'name' => ['type' => 'string'],
+        'deleted_date' => ['type' => 'datetime', 'default' => null, 'null' => true],
         '_constraints' => [
             'primary' => ['type' => 'primary', 'columns' => ['id']]
         ]

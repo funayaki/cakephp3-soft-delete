@@ -294,7 +294,7 @@ class SoftDeleteBehaviorTest extends TestCase
      */
     public function testMissingColumn()
     {
-        $this->postsTable->softDeleteField = 'foo';
+        $this->postsTable->setSoftDeleteField('foo');
         $post = $this->postsTable->get(1);
         $this->postsTable->delete($post);
     }
