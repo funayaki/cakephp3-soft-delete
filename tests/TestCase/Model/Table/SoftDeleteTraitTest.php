@@ -298,4 +298,31 @@ class SoftDeleteBehaviorTest extends TestCase
         $post = $this->postsTable->get(1);
         $this->postsTable->delete($post);
     }
+
+    /**
+     * Test deleting a record with custom value.
+     *
+     * @return void
+     */
+    public function testDeleteWithCustomValue()
+    {
+        $staff = $this->staffsTable->get(1);
+        $this->staffsTable->delete($staff);
+
+        $query = $this->staffsTable->find();
+        $this->assertEquals(0, $query->count());
+    }
+
+    /**
+     * Test restoring a record with custom value.
+     *
+     * @return void
+     */
+    public function testRestoreWithCustomValue()
+    {
+        $staff = $this->staffsTable->find('all', ['withDeleted'])->where(['id' => 2])->first();
+        $this->staffsTable->restore($staff);
+        $staff = $this->staffsTable->findById(2)->first();
+        $this->assertNotNull($staff);
+    }
 }
