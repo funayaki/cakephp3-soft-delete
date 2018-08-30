@@ -173,8 +173,7 @@ trait SoftDeleteTrait
     public function restore(EntityInterface $entity)
     {
         $softDeleteField = $this->ensureSoftDeleteFieldExists();
-        $notDeleteValue = $this->getRestoreValue();
-        $entity->$softDeleteField = $notDeleteValue;
+        $entity->{$softDeleteField} = $this->getRestoreValue();
         return $this->save($entity);
     }
 
