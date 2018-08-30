@@ -202,16 +202,25 @@ class SoftDeleteBehaviorTest extends TestCase
 
     /**
      * Tests hardDeleteAll.
+     *
+     * @return void
      */
     public function testHardDeleteAll()
     {
-        $affectedRows = $this->postsTable->hardDeleteAll(new \DateTime('now'));
+        $affectedRows = $this->postsTable->hardDeleteAll([]);
+        $this->assertEquals(0, $affectedRows);
+
+        $affectedRows = $this->postsTable->hardDeleteAll([
+            $this->postsTable->getSoftDeleteField() . ' <=' => (new \DateTime('now'))->format('Y-m-d H:i:s')
+        ]);
         $this->assertEquals(0, $affectedRows);
 
         $postsRowsCount = $this->postsTable->find('all', ['withDeleted'])->count();
 
         $this->postsTable->delete($this->postsTable->get(1));
-        $affectedRows = $this->postsTable->hardDeleteAll(new \DateTime('now'));
+        $affectedRows = $this->postsTable->hardDeleteAll([
+            $this->postsTable->getSoftDeleteField() . ' <=' => (new \DateTime('now'))->format('Y-m-d H:i:s')
+        ]);
         $this->assertEquals(1, $affectedRows);
 
         $newpostsRowsCount = $this->postsTable->find('all', ['withDeleted'])->count();

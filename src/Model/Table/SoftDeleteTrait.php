@@ -3,6 +3,7 @@ namespace SoftDelete\Model\Table;
 
 use Cake\ORM\RulesChecker;
 use Cake\Datasource\EntityInterface;
+use Cake\Utility\Hash;
 use SoftDelete\Error\MissingColumnException;
 use SoftDelete\ORM\Query;
 
@@ -149,17 +150,16 @@ trait SoftDeleteTrait
 
     /**
      * Hard deletes all records that were soft deleted before a given date.
-     * @param \DateTime $until Date until which soft deleted records must be hard deleted.
+     * @param $conditions
      * @return int number of affected rows.
      */
-    public function hardDeleteAll(\Datetime $until)
+    public function hardDeleteAll($conditions)
     {
+        $conditions = Hash::merge($conditions, ['NOT' => [$this->getActiveExpression()]]);
+
         $query = $this->query()
             ->delete()
-            ->where([
-                $this->ensureSoftDeleteFieldExists() . ' IS NOT NULL',
-                $this->ensureSoftDeleteFieldExists() . ' <=' => $until->format('Y-m-d H:i:s')
-            ]);
+            ->where($conditions);
         $statement = $query->execute();
         $statement->closeCursor();
         return $statement->rowCount();
@@ -191,5 +191,20 @@ trait SoftDeleteTrait
     public function findWithDeleted()
     {
         return $this->_findWithDeleted;
+    }
+
+    /**
+     * @return array|string
+     */
+    public function getActiveExpression()
+    {
+        $aliasedField = $this->aliasField($this->ensureSoftDeleteFieldExists());
+        $activeValue = $this->getRestoreValue();
+
+        if ($activeValue === null) {
+            return $aliasedField . ' IS NULL';
+        }
+
+        return [$aliasedField => $activeValue];
     }
 }
