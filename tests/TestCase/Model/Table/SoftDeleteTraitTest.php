@@ -13,6 +13,7 @@ class SoftDeleteBehaviorTest extends TestCase
     private $postsTable;
     private $tagsTable;
     private $postsTagsTable;
+    private $staffsTable;
 
     /**
      * fixtures
@@ -23,7 +24,8 @@ class SoftDeleteBehaviorTest extends TestCase
         'plugin.SoftDelete.users',
         'plugin.SoftDelete.posts',
         'plugin.SoftDelete.tags',
-        'plugin.SoftDelete.posts_tags'
+        'plugin.SoftDelete.posts_tags',
+        'plugin.SoftDelete.staffs'
     ];
 
     /**
@@ -35,10 +37,11 @@ class SoftDeleteBehaviorTest extends TestCase
     {
         parent::setUp();
 
-        $this->usersTable = TableRegistry::get('Users', ['className' => 'SoftDelete\Test\Fixture\UsersTable']);
-        $this->postsTable = TableRegistry::get('Posts', ['className' => 'SoftDelete\Test\Fixture\PostsTable']);
-        $this->tagsTable = TableRegistry::get('Tags', ['className' => 'SoftDelete\Test\Fixture\TagsTable']);
-        $this->postsTagsTable = TableRegistry::get('PostsTags', ['className' => 'SoftDelete\Test\Fixture\PostsTagsTable']);
+        $this->usersTable = TableRegistry::getTableLocator()->get('Users', ['className' => 'SoftDelete\Test\Fixture\UsersTable']);
+        $this->postsTable = TableRegistry::getTableLocator()->get('Posts', ['className' => 'SoftDelete\Test\Fixture\PostsTable']);
+        $this->tagsTable = TableRegistry::getTableLocator()->get('Tags', ['className' => 'SoftDelete\Test\Fixture\TagsTable']);
+        $this->postsTagsTable = TableRegistry::getTableLocator()->get('PostsTags', ['className' => 'SoftDelete\Test\Fixture\PostsTagsTable']);
+        $this->staffsTable = TableRegistry::getTableLocator()->get('Staffs', ['className' => 'SoftDelete\Test\Fixture\StaffsTable']);
     }
 
     /**
@@ -51,6 +54,7 @@ class SoftDeleteBehaviorTest extends TestCase
         unset($this->usersTable);
         unset($this->postsTable);
         unset($this->tagsTable);
+        unset($this->staffsTable);
         parent::tearDown();
     }
 
@@ -198,16 +202,25 @@ class SoftDeleteBehaviorTest extends TestCase
 
     /**
      * Tests hardDeleteAll.
+     *
+     * @return void
      */
     public function testHardDeleteAll()
     {
-        $affectedRows = $this->postsTable->hardDeleteAll(new \DateTime('now'));
+        $affectedRows = $this->postsTable->hardDeleteAll([]);
+        $this->assertEquals(0, $affectedRows);
+
+        $affectedRows = $this->postsTable->hardDeleteAll([
+            $this->postsTable->getSoftDeleteField() . ' <=' => (new \DateTime('now'))->format('Y-m-d H:i:s')
+        ]);
         $this->assertEquals(0, $affectedRows);
 
         $postsRowsCount = $this->postsTable->find('all', ['withDeleted'])->count();
 
         $this->postsTable->delete($this->postsTable->get(1));
-        $affectedRows = $this->postsTable->hardDeleteAll(new \DateTime('now'));
+        $affectedRows = $this->postsTable->hardDeleteAll([
+            $this->postsTable->getSoftDeleteField() . ' <=' => (new \DateTime('now'))->format('Y-m-d H:i:s')
+        ]);
         $this->assertEquals(1, $affectedRows);
 
         $newpostsRowsCount = $this->postsTable->find('all', ['withDeleted'])->count();
@@ -290,8 +303,66 @@ class SoftDeleteBehaviorTest extends TestCase
      */
     public function testMissingColumn()
     {
-        $this->postsTable->softDeleteField = 'foo';
+        $this->postsTable->setSoftDeleteField('foo');
         $post = $this->postsTable->get(1);
         $this->postsTable->delete($post);
+    }
+
+    /**
+     * Test deleting a record with custom value.
+     *
+     * @return void
+     */
+    public function testDeleteWithCustomValue()
+    {
+        $staff = $this->staffsTable->get(1);
+        $this->staffsTable->delete($staff);
+
+        $query = $this->staffsTable->find();
+        $this->assertEquals(0, $query->count());
+    }
+
+    /**
+     * Test restoring a record with custom value.
+     *
+     * @return void
+     */
+    public function testRestoreWithCustomValue()
+    {
+        $staff = $this->staffsTable->find('all', ['withDeleted'])->where(['id' => 2])->first();
+        $this->staffsTable->restore($staff);
+        $staff = $this->staffsTable->findById(2)->first();
+        $this->assertNotNull($staff);
+    }
+
+    /**
+     * Test hardDelete a record with custom value.
+     *
+     * @return void
+     */
+    public function testHardDeleteWithCustomValue()
+    {
+        $staff = $this->staffsTable->get(1);
+        $this->staffsTable->hardDelete($staff);
+        $staff = $this->staffsTable->findById(1)->first();
+        $this->assertNull($staff);
+
+        $staff = $this->staffsTable->find('all', ['withDeleted'])->where(['id' => 1])->first();
+        $this->assertNull($staff);
+    }
+
+    /**
+     * Tests hardDeleteAll with custom value.
+     *
+     * @return void
+     */
+    public function testHardDeleteAllWithCustomValue()
+    {
+        $affectedRows = $this->staffsTable->hardDeleteAll([]);
+        $this->assertEquals(1, $affectedRows);
+
+        $this->staffsTable->delete($this->staffsTable->get(1));
+        $affectedRows = $this->staffsTable->hardDeleteAll([]);
+        $this->assertEquals(1, $affectedRows);
     }
 }

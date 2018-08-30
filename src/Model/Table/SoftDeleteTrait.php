@@ -3,6 +3,7 @@ namespace SoftDelete\Model\Table;
 
 use Cake\ORM\RulesChecker;
 use Cake\Datasource\EntityInterface;
+use Cake\Utility\Hash;
 use SoftDelete\Error\MissingColumnException;
 use SoftDelete\ORM\Query;
 
@@ -20,13 +21,14 @@ trait SoftDeleteTrait
      * @return string
      * @throws \SoftDelete\Error\MissingFieldException
      */
-    public function getSoftDeleteField()
+    public function ensureSoftDeleteFieldExists()
     {
-        if (isset($this->softDeleteField)) {
-            $field = $this->softDeleteField;
-        } else {
-            $field = 'deleted';
+        $callable = [$this, 'getSoftDeleteField'];
+        if (!is_callable($callable)) {
+            throw new \BadMethodCallException();
         }
+
+        $field = call_user_func($callable);
 
         if ($this->getSchema()->getColumn($field) === null) {
             throw new MissingColumnException(
@@ -90,7 +92,7 @@ trait SoftDeleteTrait
         $query = $this->query();
         $conditions = (array)$entity->extract($primaryKey);
         $statement = $query->update()
-            ->set([$this->getSoftDeleteField() => date('Y-m-d H:i:s')])
+            ->set([$this->ensureSoftDeleteFieldExists() => $this->getSoftDeleteValue()])
             ->where($conditions)
             ->execute();
 
@@ -115,7 +117,7 @@ trait SoftDeleteTrait
     {
         $query = $this->query()
             ->update()
-            ->set([$this->getSoftDeleteField() => date('Y-m-d H:i:s')])
+            ->set([$this->ensureSoftDeleteFieldExists() => $this->getSoftDeleteValue()])
             ->where($conditions);
         $statement = $query->execute();
         $statement->closeCursor();
@@ -148,17 +150,16 @@ trait SoftDeleteTrait
 
     /**
      * Hard deletes all records that were soft deleted before a given date.
-     * @param \DateTime $until Date until which soft deleted records must be hard deleted.
+     * @param $conditions
      * @return int number of affected rows.
      */
-    public function hardDeleteAll(\Datetime $until)
+    public function hardDeleteAll($conditions)
     {
+        $conditions = Hash::merge($conditions, ['NOT' => [$this->getActiveExpression()]]);
+
         $query = $this->query()
             ->delete()
-            ->where([
-                $this->getSoftDeleteField() . ' IS NOT NULL',
-                $this->getSoftDeleteField() . ' <=' => $until->format('Y-m-d H:i:s')
-            ]);
+            ->where($conditions);
         $statement = $query->execute();
         $statement->closeCursor();
         return $statement->rowCount();
@@ -171,8 +172,8 @@ trait SoftDeleteTrait
      */
     public function restore(EntityInterface $entity)
     {
-        $softDeleteField = $this->getSoftDeleteField();
-        $entity->$softDeleteField = null;
+        $softDeleteField = $this->ensureSoftDeleteFieldExists();
+        $entity->$softDeleteField = $this->getRestoreValue();
         return $this->save($entity);
     }
 
@@ -190,5 +191,20 @@ trait SoftDeleteTrait
     public function findWithDeleted()
     {
         return $this->_findWithDeleted;
+    }
+
+    /**
+     * @return array|string
+     */
+    public function getActiveExpression()
+    {
+        $aliasedField = $this->aliasField($this->ensureSoftDeleteFieldExists());
+        $activeValue = $this->getRestoreValue();
+
+        if ($activeValue === null) {
+            return $aliasedField . ' IS NULL';
+        }
+
+        return [$aliasedField => $activeValue];
     }
 }

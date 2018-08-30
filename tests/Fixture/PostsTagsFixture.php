@@ -5,9 +5,10 @@ namespace SoftDelete\Test\Fixture;
 use Cake\ORM\Table;
 use Cake\TestSuite\Fixture\TestFixture;
 
+use SoftDelete\Model\Table\Entity\SoftDeleteAwareInterface;
 use SoftDelete\Model\Table\SoftDeleteTrait;
 
-class PostsTagsTable extends Table
+class PostsTagsTable extends Table implements SoftDeleteAwareInterface
 {
     use SoftDeleteTrait;
 
@@ -16,16 +17,32 @@ class PostsTagsTable extends Table
         $this->belongsTo('Tags');
         $this->belongsTo('Posts');
     }
+
+    public function getSoftDeleteField()
+    {
+        return 'deleted';
+    }
+
+    public function getSoftDeleteValue()
+    {
+        return date('Y-m-d H:i:s');
+    }
+
+    public function getRestoreValue()
+    {
+        return null;
+    }
 }
 
 
-class PostsTagsFixture extends TestFixture {
+class PostsTagsFixture extends TestFixture
+{
 
     public $fields = [
         'id' => ['type' => 'integer'],
         'post_id' => ['type' => 'integer'],
         'tag_id' => ['type' => 'integer'],
-        'deleted'     => ['type' => 'datetime', 'default' => null, 'null' => true],
+        'deleted' => ['type' => 'datetime', 'default' => null, 'null' => true],
         '_constraints' => [
             'primary' => ['type' => 'primary', 'columns' => ['id']]
         ]
