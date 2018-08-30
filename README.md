@@ -18,7 +18,7 @@ You can install this plugin into your CakePHP application using [composer](http:
 Update your composer file to include this plugin:
 
 ```shell
-composer require funayaki/cakephp3-soft-delete:dev-master
+composer require funayaki/cakephp3-soft-delete
 ```
 
 ## Configuration
