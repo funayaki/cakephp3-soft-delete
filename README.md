@@ -33,7 +33,7 @@ Plugin::load('SoftDelete');
 
 ### Make a model soft deleteable:
 
-Use the SoftDelete trait and implement the SoftDeleteAwareInterface on your model Table class:
+Use the `SoftDeleteTrait` and implement the `SoftDeleteAwareInterface` on your model Table class:
 
 ```php
 // in src/Model/Table/UsersTable.php
