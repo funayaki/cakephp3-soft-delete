@@ -60,6 +60,7 @@ class UsersTable extends Table implements SoftDeleteAwareInterface
     {
         return null;
     }
+}
 ```
 
 ## Use
