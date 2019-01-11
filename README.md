@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/funayaki/cakephp3-soft-delete.svg?branch=master)](https://travis-ci.org/funayaki/cakephp3-soft-delete)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/funayaki/cakephp3-soft-delete/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/funayaki/cakephp3-soft-delete/?branch=master)
+[![codecov](https://codecov.io/gh/funayaki/cakephp3-soft-delete/branch/master/graph/badge.svg)](https://codecov.io/gh/funayaki/cakephp3-soft-delete)
 
 ## Purpose
 
